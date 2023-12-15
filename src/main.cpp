@@ -1,7 +1,11 @@
+#include <cstdlib>
 #include <iostream>
 #include <limits.h>
+#include <pybind11/pybind11.h>
 #include "graph.cpp"
 #include "heap.cpp"
+
+namespace py = pybind11;
 
 void dijkstra(struct Graph *g, int from) {
   int n = g->V;
@@ -33,30 +37,39 @@ void dijkstra(struct Graph *g, int from) {
   for (int i = 0; i < n; i++) {
     if (i == from) continue;
     std::cout<<cost[i]<<std::endl;
-    std::cout<<prev[i]<<std::endl;
+    // std::cout<<prev[i]<<std::endl;
     std::cout<<std::endl;
   }
   std::cout<<std::endl<<std::endl;
 }
 
-int main (int argc, char *argv[]) {
-  edge edges[8] = {
-    edge{0, 1, 5, 1, 2},
-    edge{1, 0, 5, 3, 2},
-    edge{1, 2, 4, 3, 4},
-    edge{2, 1, 4, 1, 2},
-    edge{2, 0, 8, 3, 2},
-    edge{0, 2, 8, 3, 4},
-    edge{2, 3, 16, 1, 1},
-    edge{3, 2, 16, 3, 4}
-  };
+PYBIND11_MODULE(path, m) {
+  m.doc() = "MODULE DOC";
 
-  Graph g = Graph(edges, 4, 8);
+  m.def("dijkstra", &dijkstra);
+
+  py::class_<Graph>(
+      m, "Graph"
+      )
+    .def(py::init<int, int>())
+    .def("add_edge", &Graph::add_edge);
+}
+
+int main (int argc, char *argv[]) {
+  Graph g = Graph(4, 8);
+  g.add_edge(0, 1, 5, 1, 2);
+  g.add_edge(1, 0, 5, 3, 2);
+  g.add_edge(1, 2, 4, 3, 4);
+  g.add_edge(2, 1, 4, 1, 2);
+  g.add_edge(2, 0, 8, 3, 2);
+  g.add_edge(0, 2, 8, 3, 4);
+  g.add_edge(2, 3, 16, 1, 1);
+  g.add_edge(3, 2, 16, 3, 4);
   
-  dijkstra(&g, 0);
-  dijkstra(&g, 1);
-  dijkstra(&g, 2);
-  dijkstra(&g, 3);
+  // dijkstra(&g, 0);
+  // dijkstra(&g, 1);
+  // dijkstra(&g, 2);
+  // dijkstra(&g, 3);
 
   return 0;
 }
