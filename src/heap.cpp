@@ -26,7 +26,7 @@ void MinHeap::insert(int v, int key) {
   if (size == capacity)
     return;
 
-  struct node *n = (struct node*)malloc(sizeof(node));
+  struct node *n = (struct node*)malloc(sizeof(struct node));
   n->n = v;
   n->key = key;
   // struct HeapNode *n = new HeapNode{from, key};
@@ -63,27 +63,6 @@ void MinHeap::decrease(int v, int key) {
 
 bool MinHeap::is_empty() {
   return size == 0;
-}
-
-void MinHeap::del(int v) {
-  int last = size - 1;
-  if (pos[v] == last) {
-    delete arr[last];
-    arr[last] = nullptr;
-    return;
-  }
-
-  int key = arr[pos[v]]->key;
-  std::swap(arr[pos[v]], arr[last]);
-  pos[arr[v]->n] = v;
-  delete arr[last];
-  arr[last] = nullptr;
-  size--;
-
-  if (arr[v]->key > key)
-    down_heapify(v);
-  else if (arr[v]->key < key)
-    up_heapify(v);
 }
 
 void MinHeap::down_heapify(int i) {

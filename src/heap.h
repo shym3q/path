@@ -9,7 +9,6 @@ class MinHeap {
   struct node **arr;
   int *pos;
   int capacity, size;
-  void del(int v);
   void down_heapify(int i);
   void up_heapify(int i);
 public:

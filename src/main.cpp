@@ -7,7 +7,13 @@
 
 namespace py = pybind11;
 
-void dijkstra(struct Graph *g, int from) {
+struct result {
+  int i, n;
+  struct result *next;
+  struct result *next_element();
+};
+
+struct result *dijkstra(struct Graph *g, int from, int to) {
   int n = g->V;
   int cost[n], prev[n];
   struct MinHeap q = MinHeap(n);
@@ -24,28 +30,38 @@ void dijkstra(struct Graph *g, int from) {
   while (!q.is_empty()) {
     struct node *min = q.extract_min();
     int u = min->n;
+    if (u == to) break;
     for (struct vertex *v = g->adj_list[u]; v != nullptr; v = v->next) {
-      int alt;
-      if ((alt = cost[u] + v->cost - v->demand - v->citizens) < cost[v->vertex]) {
-        cost[v->vertex] = alt;
-        prev[v->vertex] = u;
-        q.decrease(v->vertex, alt);
+      int alt = cost[u] + v->cost - v->demand - v->citizens;
+      // int alt = cost[u] + v->cost;
+      int n = v->vertex;
+      if (alt < cost[n]) {
+        cost[n] = alt;
+        prev[n] = u;
+        q.decrease(n, alt);
       }
     }
   }
 
-  for (int i = 0; i < n; i++) {
-    if (i == from) continue;
-    std::cout<<cost[i]<<std::endl;
-    // std::cout<<prev[i]<<std::endl;
-    std::cout<<std::endl;
+  int len = 0;
+  struct result *r = NULL;
+  for (int i = to; i != -1; i = prev[i]) {
+    struct result *next = (struct result*)malloc(sizeof(struct result));
+    next->i = i;
+    next->next = r;
+    r = next;
+    len++;
   }
-  std::cout<<std::endl<<std::endl;
+  r->n = len;
+
+  return r;
+}
+
+struct result *result::next_element() {
+  return next;
 }
 
 PYBIND11_MODULE(path, m) {
-  m.doc() = "MODULE DOC";
-
   m.def("dijkstra", &dijkstra);
 
   py::class_<Graph>(
@@ -53,23 +69,11 @@ PYBIND11_MODULE(path, m) {
       )
     .def(py::init<int, int>())
     .def("add_edge", &Graph::add_edge);
-}
 
-int main (int argc, char *argv[]) {
-  Graph g = Graph(4, 8);
-  g.add_edge(0, 1, 5, 1, 2);
-  g.add_edge(1, 0, 5, 3, 2);
-  g.add_edge(1, 2, 4, 3, 4);
-  g.add_edge(2, 1, 4, 1, 2);
-  g.add_edge(2, 0, 8, 3, 2);
-  g.add_edge(0, 2, 8, 3, 4);
-  g.add_edge(2, 3, 16, 1, 1);
-  g.add_edge(3, 2, 16, 3, 4);
-  
-  // dijkstra(&g, 0);
-  // dijkstra(&g, 1);
-  // dijkstra(&g, 2);
-  // dijkstra(&g, 3);
-
-  return 0;
+  py::class_<result>(
+      m, "Result"
+      )
+    .def_readwrite("i", &result::i)
+    .def_readwrite("n", &result::n)
+    .def("next", &result::next_element);
 }

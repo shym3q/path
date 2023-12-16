@@ -33,7 +33,7 @@ Graph::~Graph() {
 
 void Graph::add_edge(int from, int to, int weight, int citizens, int demand) {
   struct vertex **head = &adj_list[from];
-  struct vertex *n = (struct vertex*)malloc(sizeof(vertex));
+  struct vertex *n = (struct vertex*)malloc(sizeof(struct vertex));
   n->vertex = to;
   n->citizens = citizens;
   n->cost = weight;
