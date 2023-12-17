@@ -33,7 +33,6 @@ struct result *dijkstra(struct Graph *g, int from, int to) {
     if (u == to) break;
     for (struct vertex *v = g->adj_list[u]; v != nullptr; v = v->next) {
       int alt = cost[u] + v->cost - v->demand - v->citizens;
-      // int alt = cost[u] + v->cost;
       int n = v->vertex;
       if (alt < cost[n]) {
         cost[n] = alt;

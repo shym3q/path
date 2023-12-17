@@ -61,10 +61,6 @@ void MinHeap::decrease(int v, int key) {
   up_heapify(i);
 }
 
-bool MinHeap::is_empty() {
-  return size == 0;
-}
-
 void MinHeap::down_heapify(int i) {
   int l, r, smallest;
   l = LEFT(i);
@@ -91,4 +87,8 @@ void MinHeap::up_heapify(int i) {
     pos[arr[parent]->n] = parent;
     up_heapify(parent);
   }
+}
+
+bool MinHeap::is_empty() {
+  return size == 0;
 }

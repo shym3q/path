@@ -8,10 +8,10 @@ struct vertex {
 class Graph {
 public:
   int V, E;
+  struct vertex **adj_list;
   Graph(int v, int e);
   ~Graph();
   void add_edge(int from, int to, int weight, int citizens, int demand);
-  struct vertex **adj_list;
 };
 
 Graph::Graph(int v, int e) : V(v), E(e) {
